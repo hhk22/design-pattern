@@ -1,92 +1,72 @@
 
 # Design Pattern :: Factory
-# 클래스의 인스턴스를 만드는 일을 서브클래스에게 맡기는 것.
+# 팩토리 패턴은 객체 생성과정을 간편화하고, 이 단계를 클라이언트 코드로부터 분리하는데에 주 목적이 있다.
 
 # Factory Method
-# 단일 객체 생성에 초점.
+# 객체 생성을 위한 인터페이스를 정의하고, 구체적인 사항은 서브클래스에서 정하는것.
+# 즉, Factory Method 패턴을 이용하여, 클래스의 인스턴스를 만드는 일을 서브클래스에게 맡긴다.
 from abc import ABCMeta, abstractmethod
 
 
+# interface walk를 정의하고, 구체적인 구현은 Anima을 상속받는 서브클래스에게 위임한다.
+# abstractmethod를 적용하여, 강제성을 부여.
 class Animal(metaclass=ABCMeta):
     @abstractmethod
     def walk(self):
         pass
 
+    @classmethod
+    def createAnimal(cls):
+        return cls()
 
+
+# subclass에서 walk를 구체적으로 구현.
 class Dog(Animal):
     def walk(self):
-        print('dog is walking...')
+        print('Dog is walking...')
 
 
-class Cat(Animal):
-    def walk(self):
-        print('cat is walking...')
+# client에서 Factory Method를 사용하는 모습.
+def createAnimal(type):
+    if type == 'dog':
+        return Dog.createAnimal()
 
-
-class AnimalFactory:
-    def createAnimal(self, animal: str):
-        if animal == "dog":
-            return Dog()
-        elif animal == "cat":
-            return Cat()
-
-
-animal_factory = AnimalFactory()
-dog = animal_factory.createAnimal('dog')
-dog.walk()
 
 # Abstract Factory Method
-# 관련된 객체의 서브그룹들을 생성하는데 초점.
-class AFMAnimal(metaclass=ABCMeta):
+# Factory Method를 생성하는 중간단계를 한단계 더 생성함으로써,
+# 의존하는 객체를 생성할 수 있음.
+class Button(metaclass=ABCMeta):
     @abstractmethod
-    def walk(self):
-        pass
-
-    @abstractmethod
-    def rest(self):
-        pass
-
-    @abstractmethod
-    def run(self):
+    def click(self):
         pass
 
 
-class AFMDog(Animal):
-    def walk(self):
-        print('dog is warlking...')
-
-    def rest(self):
-        print('dog is resting...')
-
-    def run(self):
-        print('dog is running')
+# Factory Method
+class WindowsButton(Button):
+    def click(self):
+        print('windows button click.')
 
 
-class AFMCat(Animal):
-    def walk(self):
-        print('cat is warlking...')
-
-    def rest(self):
-        print('cat is resting...')
-
-    def run(self):
-        print('cat is running')
+# 중간단계에 Abstract Factory Method를 추가.
+class GUIFactory(metaclass=ABCMeta):
+    @abstractmethod
+    def create_button(self):
+        pass
 
 
-# Factory 패턴으로 생성된 class 들의 서브동작으로 구성된 메소드.
-# Factory Method 방식 자체는 단일 객체의 구현에 집중했다면
-# Abstract Factory Method 방식은 서브 그룹의 동작을 한데로 모은것에 초점을 둔다.
-def application():
-    dog = AFMDog()
-    cat = AFMCat()
+# 해당 Abstract Factory Method에서 정의한 create_button을 정의한다.
+# 이렇게 함으로써, Factory Method에서 정의한 class를 생성할때, 추가 연관된 작업들을 할 수 있다.
+# 여기선 Window Button을 생성할때 mouse icon을 전에 넣고 싶어서 이런식으로 구현할 수 있다.
+class WindowsFactory(GUIFactory):
+    def create_button(self):
+        print('move mouse icon')
+        return WindowsButton()
 
-    dog.walk()
-    cat.walk()
-
-    dog.rest()
-
-    dog.run()
-    cat.run()
+# application에서 Abstract Factory Method를 이용하는 모습.
+def application(factory_type):
+    if factory_type == "windows":
+        factory = WindowsFactory()
+    return factory.create_button()
 
 
-application()
+application('windows')
