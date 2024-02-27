@@ -62,6 +62,7 @@ class WindowsFactory(GUIFactory):
         print('move mouse icon')
         return WindowsButton()
 
+
 # application에서 Abstract Factory Method를 이용하는 모습.
 def application(factory_type):
     if factory_type == "windows":

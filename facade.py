@@ -1,54 +1,37 @@
-# Client와 Application System과의 관계
-# Client은 Application의 Sub System을 몰라도, 정해진 interface만을 이용해 구현 가능. 
-# --> 복잡한 Sub System 은 알필요가 없다. Client 입장에서. 
+# Facade Pattern
+# 복잡한 로직은 안으로 캡슐화하고, Client쪽에서는 일관된 인터페이스를 제공하는것이 주 목적.=
 
 
-class Hotelier:
-    def bookHotel(self):
-        print("Succesfully booked Hotel.!!")
+class EmailService:
+    def send_email(self, message):
+        print(f"Sending email: {message}")
 
 
-class Florist:
-    def setFlowerRequirements(self):
-        print("Roses are used for Decorations!!")
+class SMSService:
+    def send_sms(self, message):
+        print(f"Sending SMS: {message}")
 
 
-class Caterer:
-    def setCuisine(self):
-        print("Chinese & Continental Cuisine to be served")
+class PushNotifications:
+    def send_notification(self, messsage):
+        print(f"Sending push notification: {messsage}")
 
 
-class Musician:
-    def setMusicType(self):
-        print("Jazz and Classical will be played")
-
-
-class EventManager:
+class MessageManager:
     def __init__(self) -> None:
-        print("Marriage Event Manager::")
-    
-    def arrange(self):
-        self.hotelier = Hotelier()
-        self.hotelier.bookHotel()
-        
-        self.florist = Florist()
-        self.florist.setFlowerRequirements()
-        
-        self.caterer = Caterer()
-        self.caterer.setCuisine()
-        
-        self.musician = Musician()
-        self.musician.setMusicType()
+        self.email_service = EmailService()
+        self.sms_service = SMSService()
+        self.push_service = PushNotifications()
+
+    def send_message(self, message: str, message_type: str):
+        if message_type == "email":
+            self.email_service.send_email(message)
+        elif message_type == "sms":
+            self.sms_service.send_sms(message)
+        else:
+            self.push_service.send_notification(message)
 
 
-class Client:
-    def __init__(self) -> None:
-        print("Arrived!. ready to aranger")
-    
-    def askEventManager(self):
-        em = EventManager()
-        em.arrange()
-
-
-you = Client()
-you.askEventManager()
+# Client
+manager = MessageManager()
+manager.send_message("Hi, Hello", 'email')
