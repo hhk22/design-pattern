@@ -1,8 +1,8 @@
 # design-pattern
 
 1. Singleton 
-2. Factory - finished
-3. Facade
+2. Factory
+3. Facade - Finished
 4. Proxy
 5. Observer
 6. Command

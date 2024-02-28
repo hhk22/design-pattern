@@ -1,47 +1,37 @@
-# proxy vs facade
-# proxy는 실제 객체와 동일한 작용을하는 대리 객체를 제공. 
-# facade는 복잡한 sub-system에 대해서 단순한 interface를 제공. 
-from abc import ABCMeta, abstractmethod
 
-class Payment(metaclass=ABCMeta):
-    @abstractmethod
-    def do_pay(self):
-        pass
+# Proxy Pattern
+# Real객체에 직접 접근하는 대신, Proxy 객체가 이를 대신한다. 
+
+class Card:
+    def __init__(self) -> None:
+        self.card_number: str = None
+        self.cash = 0
+
+    def set_card_number(self, number):
+        self.card_number = number
+
+    def increase_cash(self, amount):
+        self.cash += amount
 
 
-# Real Subject
-class Bank(Payment):
+class CardProxy:
     def __init__(self):
-        self.card_number = None
+        self._card = Card()
 
-    def set_card(self, card_number):
-        self.card_number = card_number
-    
-    def do_pay(self):
-        if self.card_number:
-            print("Bank:: Paying...")
-            return True
-        return False
+    def set_card_number(self, number: int):
+        # ex) ######## -> ####-####
+        if len(number) != 8:
+            raise ValueError('The length of the number should be 8')
 
-# Proxy
-class DebitCard(Payment):
-    def __init__(self):
-        self.bank = Bank()
-    
-    def do_pay(self):
-        card_number = input("insert card_number")
-        self.bank.set_card(card_number)
-        return self.bank.do_pay()
+        card_string = str(number)
+        self._card.set_card_number(card_string[:4] + '-' + card_string[4:])
+        print(self._card.card_number)
+
+    def increase_cash(self, amount):
+        if amount > 0 and self._card.card_number is not None:
+            self._card.increase_cash(amount)
+            print(self._card.cash)
 
 
-class You:
-    def __init__(self):
-        self.debit_card = DebitCard()
-        self.is_purchased = None
-    
-    def make_payment(self):
-        self.is_purchased = self.debit_card.do_pay()
-    
-
-you = You()
-you.make_payment()
+card = CardProxy()
+card.set_card_number('81239034')
